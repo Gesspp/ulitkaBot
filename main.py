@@ -15,7 +15,7 @@ async def start(message: types.Message):
     await message.answer('This bot is created for making posts', reply_markup=post_keyboard())
 
 
-@dp.callback_query(PostCallback.filer())
+@dp.callback_query(PostCallback.filter())
 async def callback_inline(
     callback: types.CallbackQuery, 
     callback_data: PostCallback,
