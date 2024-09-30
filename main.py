@@ -1,6 +1,7 @@
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
+from aiogram.utils.media_group import MediaGroupBuilder
 from kb import post_keyboard
 from callbacks import PostCallback
 from states import PostState
@@ -31,9 +32,19 @@ async def callback_inline(
 
 @dp.message(PostState.process)
 async def process_post(message: types.Message):
-    mess = message.text
-    bot.send_message(-1002441261910, "Post: " + mess + f" @{message.from_user.username}")
-    bot.send_message(-1002461746865, "Post: " + mess)
+    if message.photo:
+        photos = message.photo
+        caption_outer = message.caption if message.caption else ""
+        caption_inner = caption_outer + f" @{message.from_user.username}"
+        media_group = MediaGroupBuilder(caption=caption_inner)
+        for photo in photos: media_group.add_photo(photo.file_id)
+        # await bot.send_media_group(-1002441261910, media_group.build())
+        media_group.caption = caption_outer
+        await bot.send_media_group(-1002461746865, media_group.build())
+    else:
+        mess = message.text
+        # await bot.send_message(-1002441261910, "Post: " + mess + f" @{message.from_user.username}")
+        await bot.send_message(-1002461746865, "Post: " + mess)
 
 async def on_startup():
     await dp.start_polling(bot)
