@@ -4,6 +4,7 @@ from aiogram.fsm.context import FSMContext
 from kb import post_keyboard
 from callbacks import PostCallback
 from states import PostState
+import asyncio
 
 
 bot = Bot('8064482140:AAFGqr48VTiLHjYAanI1wWbJ4sMA7JHhmdU')
@@ -34,5 +35,9 @@ async def process_post(message: types.Message):
     bot.send_message(-1002441261910, "Post: " + mess + f" @{message.from_user.username}")
     bot.send_message(-1002461746865, "Post: " + mess)
 
+async def on_startup():
+    await dp.start_polling(bot)
 
-bot.polling()
+
+if __name__ == "__main__":
+    asyncio.run(on_startup())
