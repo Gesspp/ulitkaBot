@@ -1,29 +1,35 @@
-import telebot
-from telebot import types
-
-bot = telebot.TeleBot('8064482140:AAFGqr48VTiLHjYAanI1wWbJ4sMA7JHhmdU')
-
-
-@bot.message_handler(commands=['start'])
-def start(message):
-    markup = types.InlineKeyboardMarkup()
-    btn2 = types.InlineKeyboardButton('Want to make a post?', callback_data='make_post')
-    btn3 = types.InlineKeyboardButton('Information', callback_data='info')
-    markup.add(btn2, btn3)
-
-    bot.send_message(message.chat.id, 'This bot is created for making posts', reply_markup=markup)
+from aiogram import Bot, Dispatcher, types
+from aiogram.filters import Command
+from aiogram.fsm.context import FSMContext
+from kb import post_keyboard
+from callbacks import PostCallback
+from states import PostState
 
 
-@bot.callback_query_handler(func=lambda call: True)
-def callback_inline(call):
-    if call.data == 'info':
-        bot.send_message(call.message.chat.id, "This bot is for making posts")
-    elif call.data == 'make_post':
-        msg = bot.send_message(call.message.chat.id, "Please enter your post text")
-        bot.register_next_step_handler(msg, process_post)
+bot = Bot('8064482140:AAFGqr48VTiLHjYAanI1wWbJ4sMA7JHhmdU')
+dp = Dispatcher()
 
 
-def process_post(message):
+@dp.message(Command("start"))
+async def start(message: types.Message):
+    await message.answer('This bot is created for making posts', reply_markup=post_keyboard())
+
+
+@dp.callback_query(PostCallback.filer())
+async def callback_inline(
+    callback: types.CallbackQuery, 
+    callback_data: PostCallback,
+    state: FSMContext
+):
+    if callback_data.action == 'info':
+        await callback.message.answer("This bot is for making posts")
+    elif callback_data.action == 'make_post':
+        await callback.message.answer("Please enter your post text")
+        await state.set_state(PostState.process)
+        
+
+@dp.message(PostState.process)
+async def process_post(message: types.Message):
     mess = message.text
     bot.send_message(-1002441261910, "Post: " + mess + f" @{message.from_user.username}")
     bot.send_message(-1002461746865, "Post: " + mess)
