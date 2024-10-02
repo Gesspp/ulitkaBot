@@ -43,7 +43,7 @@ async def process_post(message: types.Message):
         await bot.send_media_group(-1002461746865, media_group.build())
     else:
         mess = message.text
-        await bot.send_message(-1002476615250, "Post: " + mess + f" @{message.from_user.username}")
+        await bot.send_message(-1002439039190, "Post: " + mess + f" @{message.from_user.username}")
         await bot.send_message(-1002461746865, "Post: " + mess)
 
 async def on_startup():
