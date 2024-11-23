@@ -38,8 +38,8 @@ async def process_post(message: types.Message):
         caption_inner = caption_outer + f" @{message.from_user.username}"
         media_group = MediaGroupBuilder(caption=caption_inner)
         for photo in photos: media_group.add_photo(photo.file_id)
-        # await bot.send_media_group(-1002486555998, media_group.build())
         media_group.caption = caption_outer
+        await bot.send_media_group(-1002439039190, media_group.build() + f" @{message.from_user.username}")
         await bot.send_media_group(-1002461746865, media_group.build())
     else:
         mess = message.text
